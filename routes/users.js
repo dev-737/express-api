@@ -4,22 +4,36 @@ const router = express.Router();
 router.use(logger);
 
 router.get('/', (req, res) => {
-	res.send('User List');
+	// query thingy (/?name=joe)
+	console.log(req.query.name);
+	res.status(200).send(users);
 });
 
 router.get('/new', (req, res) => {
-	res.send('User New Form');
+	res.render('users/new');
 });
 
 router.post('/', (req, res) => {
-	res.send('Create User');
+	const isValid = true;
+	if (isValid) {
+		console.log('in');
+		users.push({ name: req.body.firstName });
+		res.redirect(`/users/${users.length - 1}`);
+	}
+
+	else {
+		console.log('Error');
+		res.render('users/new', { firstName: req.body.firstName });
+	}
 });
 
 
 router.route('/:id')
 	.get((req, res) => {
-		res.send('Get User With ID: ' + req.params.id);
-		console.log(req.user);
+		if (!req.user) {
+			return res.send('Invalid user id');
+		}
+		res.json(req.user);
 	})
 	.put((req, res) => res.send('Update User With ID: ' + req.params.id))
 	.delete((req, res) => res.send('Delete User With ID: ' + req.params.id));
